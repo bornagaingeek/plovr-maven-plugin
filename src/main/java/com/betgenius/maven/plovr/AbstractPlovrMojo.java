@@ -1,6 +1,7 @@
 package com.betgenius.maven.plovr;
 
 
+import com.betgenius.ConfigOperations;
 import com.google.common.collect.ImmutableList;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -24,6 +25,10 @@ public abstract class AbstractPlovrMojo extends AbstractMojo {
     @Parameter
     protected String[] excludes = {};
 
+    private static final String ADDRESS_FILE_NAME = "plovr-address.json";
+
+    private String host = "localhost";
+    private int port = 9810;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -39,8 +44,16 @@ public abstract class AbstractPlovrMojo extends AbstractMojo {
         directoryScanner.scan();
 
         for (String fileName : directoryScanner.getIncludedFiles()) {
-            listBuilder.add(new File(baseDirectory, fileName));
-
+            getLog().info(String.format("   ...reading '%s'", fileName));
+            if (fileName.equals(ADDRESS_FILE_NAME)) {
+                File addressFile = new File(baseDirectory, fileName);
+                host = ConfigOperations.getConfigHostFromFile(addressFile);
+                port = ConfigOperations.getConfigPortFromFile(addressFile);
+                getLog().info(String.format("Configured to listen to '%s':'%d'", host, port));
+			} else
+			{
+				listBuilder.add( new File( baseDirectory, fileName ) );
+			}
         }
         return listBuilder.build();
     }
@@ -52,6 +65,7 @@ public abstract class AbstractPlovrMojo extends AbstractMojo {
             if (!configurationDirectory.exists()) {
                 getLog().warn(String.format("Configuration directory '%s' does not exist", configurationDirectory));
             } else {
+                getLog().info(String.format("...from '%s'", configurationDirectory));
                 listBuilder.addAll(getConfigurationFiles(configurationDirectory));
             }
         }
@@ -67,12 +81,12 @@ public abstract class AbstractPlovrMojo extends AbstractMojo {
         }
 
         try {
-            CompilationServer server = new CompilationServer("localhost", 9810, false);
+            CompilationServer server = new CompilationServer(host, port, false);
             for (File configFile : configurationFiles) {
                 server.registerConfig(ConfigParser.parseFile(configFile));
             }
             server.run();
-            getLog().info("Plovr server started.");
+            getLog().info("Plovr server is started.");
         } catch (Exception e) {
             getLog().error("Problem starting plovr server. " + e.getMessage());
             throw new MojoFailureException("Could not start plovr server",e);

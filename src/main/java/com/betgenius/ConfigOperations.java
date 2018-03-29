@@ -19,7 +19,22 @@ public class ConfigOperations {
             return new ObjectMapper().readValue(config, JsonNode.class).get("id").asText();
         } catch (IOException e) {
             return null;
+        }
+    }
 
+    public static String getConfigHostFromFile(File config) {
+        try {
+            return new ObjectMapper().readValue(config, JsonNode.class).get("host").asText();
+        } catch (IOException e) {
+            return "localhost";
+        }
+    }
+
+    public static int getConfigPortFromFile(File config) {
+        try {
+            return new ObjectMapper().readValue(config, JsonNode.class).get("port").asInt();
+        } catch (IOException e) {
+            return 9810;
         }
     }
 
