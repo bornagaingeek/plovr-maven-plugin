@@ -20,7 +20,7 @@ to install to your local repo, or deploy to nexus the standard way.
             <plugin>
                 <groupId>com.betgenius</groupId>
                 <artifactId>plovr-maven-plugin</artifactId>
-                <version>1.0.7-SNAPSHOT</version>
+                <version>1.0.7.1</version>
                 <executions>
                     <execution>
                         <id>compilejs</id>
@@ -30,7 +30,7 @@ to install to your local repo, or deploy to nexus the standard way.
                         <phase>compile</phase>
                         <configuration>
                             <includes>
-                                <include>**/prodcompile.json</include>
+                                <include>**/plovr-config.json</include>
                             </includes>
                         </configuration>
                     </execution>
@@ -49,7 +49,7 @@ to install to your local repo, or deploy to nexus the standard way.
                     <plugin>
                         <groupId>com.betgenius</groupId>
                         <artifactId>plovr-maven-plugin</artifactId>
-                        <version>1.0.7-SNAPSHOT</version>
+                        <version>1.0.7.1</version>
                         <executions>
                             <execution>
                                 <id>testjs</id>
